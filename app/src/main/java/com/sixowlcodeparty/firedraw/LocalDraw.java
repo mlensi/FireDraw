@@ -4,9 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import java.util.ArrayList;
 
 /**
  * Created by Michael Lensi on 6/8/2016.
@@ -16,13 +19,16 @@ public class LocalDraw extends View {
     Paint mPaint;
     float mX = -1f;
     float mY = -1f;
+    LocalDB db;
+    ArrayList<PointF> arr_P = new ArrayList<>();
 
     public LocalDraw(Context context) {
         super(context);
-        //init();
+        db = new LocalDB(getContext());
     }
     public LocalDraw(Context context, AttributeSet attrs) {
         super(context, attrs);
+        db = new LocalDB(getContext());
     }
 
     @Override
@@ -40,18 +46,31 @@ public class LocalDraw extends View {
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.BLUE);
 
+        arr_P.clear();
+        arr_P = db.getCoordinates();
+        for (PointF p : arr_P) {
+            if (p.x > 0 && p.x < width) {
+                if (p.y > 0 && p.y < height) {
+                    canvas.drawCircle(p.x, p.y, 5f, mPaint);
+                }
+            }
+        }
+
+        /*
         if (mX > 0 && mX < width) {
             if (mY > 0 && mY < height) {
                 canvas.drawCircle(mX, mY, 5f, mPaint);
             }
         }
+        */
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        mX = event.getX();
-        mY = event.getY();
+        PointF p = new PointF(event.getX(), event.getY());
+        db.insertCoord(p);
+
         invalidate();
 
         return true;
