@@ -27,6 +27,8 @@ public class RemoteDraw extends View {
     Firebase ref;
     double mX;
     double mY;
+    LocalDB db;
+    ArrayList<PointF> arr_P = new ArrayList<>();
 
     public RemoteDraw(Context context) {
         super(context);
@@ -39,7 +41,7 @@ public class RemoteDraw extends View {
 
     private void init() {
 
-        //db = new LocalDB(getContext());
+        db = new LocalDB(getContext(), "topdraw.db");
 
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
         ref.addValueEventListener(new ValueEventListener() {
@@ -52,6 +54,9 @@ public class RemoteDraw extends View {
 
                 mX = (double) snapMap.get("x");
                 mY = (double) snapMap.get("y");
+
+                PointF p = new PointF((float) mX, (float) mY);
+                db.insertCoord(p);
 
                 invalidate();
 
@@ -78,9 +83,13 @@ public class RemoteDraw extends View {
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.RED);
 
-        if (mX > 0 && mX < width) {
-            if (mY > 0 && mY < height) {
-                canvas.drawCircle((float) mX, (float) mY, 5f, mPaint);
+        arr_P.clear();
+        arr_P = db.getCoordinates();
+        for (PointF p : arr_P) {
+            if (p.x > 0 && p.x < width) {
+                if (p.y > 0 && p.y < height) {
+                    canvas.drawCircle(p.x, p.y, 5f, mPaint);
+                }
             }
         }
 

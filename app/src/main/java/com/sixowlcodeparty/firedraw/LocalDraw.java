@@ -27,12 +27,15 @@ public class LocalDraw extends View {
 
     public LocalDraw(Context context) {
         super(context);
-        db = new LocalDB(getContext());
-        ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
+        init();
     }
     public LocalDraw(Context context, AttributeSet attrs) {
         super(context, attrs);
-        db = new LocalDB(getContext());
+        init();
+    }
+
+    private void init() {
+        db = new LocalDB(getContext(), "bottomdraw.db");
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
     }
 

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class LocalDB {
 
     // database name and version
-    public static final String DB_NAME = "localdraw.db";
+    //public static final String DB_NAME = "localdraw.db";
     public static final int DB_VERSION = 1;
 
     // Location table
@@ -72,9 +72,9 @@ public class LocalDB {
 
     Context mCtx;
 
-    public LocalDB(Context context) {
+    public LocalDB(Context context, String strDbName) {
         mCtx = context;
-        dbHelper = new RunTrackerDBHelper(context, DB_NAME, null, DB_VERSION);
+        dbHelper = new RunTrackerDBHelper(context, strDbName, null, DB_VERSION);
     }
 
     private void openReadableDB() {

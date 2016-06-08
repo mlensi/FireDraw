@@ -15,9 +15,14 @@ import com.firebase.client.Firebase;
 public class MainActivity extends FragmentActivity {
 
 
+    public static final String TOP_DB_NAME = "topdraw.db";
+    public static final String BOTTOM_DB_NAME = "bottomdraw.db";
+
     Firebase ref;
+    RemoteDraw mTop;
     LocalDraw mBottom;
-    public LocalDB db;
+    LocalDB dbTop;
+    LocalDB dbBot;
     Button button_PressMe;
 
 
@@ -29,16 +34,20 @@ public class MainActivity extends FragmentActivity {
 
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
 
+        mTop = (RemoteDraw) findViewById(R.id.vpSwipeTop);
         mBottom = (LocalDraw) findViewById(R.id.vpSwipeBottom);
 
-        db = new LocalDB(getApplicationContext());
+        dbTop = new LocalDB(getApplicationContext(), TOP_DB_NAME);
+        dbBot = new LocalDB(getApplicationContext(), BOTTOM_DB_NAME);
 
         button_PressMe = (Button) findViewById(R.id.button);
         button_PressMe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                db.deleteCoordinates();
+                dbTop.deleteCoordinates();
+                dbBot.deleteCoordinates();
+                mTop.invalidate();
                 mBottom.invalidate();
 
             }
