@@ -19,8 +19,6 @@ import java.util.ArrayList;
 public class LocalDraw extends View {
 
     Paint mPaint;
-    float mX = -1f;
-    float mY = -1f;
     LocalDB db;
     ArrayList<PointF> arr_P = new ArrayList<>();
     Firebase ref;
@@ -35,7 +33,7 @@ public class LocalDraw extends View {
     }
 
     private void init() {
-        db = new LocalDB(getContext(), "bottomdraw.db");
+        db = new LocalDB(getContext(), "bottomdraw.db");    // TODO un-hardcode
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
     }
 
@@ -72,6 +70,10 @@ public class LocalDraw extends View {
         PointF p = new PointF(event.getX(), event.getY());
         db.insertCoord(p);
 
+        //
+        // FIREBASE WRITE OP
+        // will write the PointF object as a HashMap with "x" and "y" keys
+        //
         ref.setValue(p);
 
         invalidate();

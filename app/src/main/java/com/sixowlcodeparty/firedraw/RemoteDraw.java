@@ -41,15 +41,21 @@ public class RemoteDraw extends View {
 
     private void init() {
 
-        db = new LocalDB(getContext(), "topdraw.db");
+        db = new LocalDB(getContext(), "topdraw.db");   // TODO un-hardcode this
 
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
+
+        //
+        // FIREBASE CHANGE LISTENER
+        //
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 System.out.println(snapshot.getValue());
                 //Log.d("firebase", snapshot.getValue().toString());
 
+                // was written in LocalDraw as a PointF, which Firebase converted to HashMap,
+                // so cast accordingly
                 Map<String, Object> snapMap = (Map<String, Object>) snapshot.getValue();
 
                 mX = (double) snapMap.get("x");
