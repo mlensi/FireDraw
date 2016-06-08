@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -13,6 +14,8 @@ import android.view.View;
 public class LocalDraw extends View {
 
     Paint mPaint;
+    float mX = -1f;
+    float mY = -1f;
 
     public LocalDraw(Context context) {
         super(context);
@@ -36,8 +39,21 @@ public class LocalDraw extends View {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.BLUE);
-        canvas.drawCircle(width/2f, height/2f, 50f, mPaint);
 
+        if (mX > 0 && mX < width) {
+            if (mY > 0 && mY < height) {
+                canvas.drawCircle(mX, mY, 5f, mPaint);
+            }
+        }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        mX = event.getX();
+        mY = event.getY();
+        invalidate();
+
+        return true;
+    }
 }
