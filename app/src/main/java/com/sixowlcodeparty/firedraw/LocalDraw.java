@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.firebase.client.Firebase;
+
 import java.util.ArrayList;
 
 /**
@@ -21,14 +23,17 @@ public class LocalDraw extends View {
     float mY = -1f;
     LocalDB db;
     ArrayList<PointF> arr_P = new ArrayList<>();
+    Firebase ref;
 
     public LocalDraw(Context context) {
         super(context);
         db = new LocalDB(getContext());
+        ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
     }
     public LocalDraw(Context context, AttributeSet attrs) {
         super(context, attrs);
         db = new LocalDB(getContext());
+        ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
     }
 
     @Override
@@ -56,13 +61,6 @@ public class LocalDraw extends View {
             }
         }
 
-        /*
-        if (mX > 0 && mX < width) {
-            if (mY > 0 && mY < height) {
-                canvas.drawCircle(mX, mY, 5f, mPaint);
-            }
-        }
-        */
     }
 
     @Override
@@ -70,6 +68,8 @@ public class LocalDraw extends View {
 
         PointF p = new PointF(event.getX(), event.getY());
         db.insertCoord(p);
+
+        ref.setValue(p);
 
         invalidate();
 

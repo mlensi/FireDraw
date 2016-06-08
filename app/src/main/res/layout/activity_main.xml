@@ -14,8 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="#ffffff">
-        <android.support.v4.view.ViewPager
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.sixowlcodeparty.firedraw.RemoteDraw
             android:id="@+id/vpSwipeTop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
