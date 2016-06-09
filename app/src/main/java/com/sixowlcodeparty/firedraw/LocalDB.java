@@ -19,7 +19,7 @@ public class LocalDB {
 
     // database name and version
     //public static final String DB_NAME = "localdraw.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
 
     // Location table
     public static final String COORD_TABLE = "coord";
@@ -33,16 +33,16 @@ public class LocalDB {
     public static final String COORD_X = "coordX";
     public static final int COORD_X_COL = 2;
 
-    public static final String LOCATION_TIME = "time";
-    public static final int LOCATION_TIME_COL = 3;
+    public static final String IMODE = "iMode";
+    public static final int IMODE_COL = 3;
 
     /** Database SQL **/
     public static final String CREATE_COORD_TABLE =
             "CREATE TABLE " + COORD_TABLE + " (" +
-                    COORD_ID        + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    COORD_Y         + " REAL, " +
-                    COORD_X         + " REAL, " +
-                    LOCATION_TIME   + " INTEGER)";
+                    COORD_ID  + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COORD_Y   + " REAL, " +
+                    COORD_X   + " REAL, " +
+                    IMODE     + " INTEGER)";
 
     public static final String DROP_COORD_TABLE =
             "DROP TABLE IF EXISTS " + COORD_TABLE;
@@ -90,13 +90,13 @@ public class LocalDB {
             db.close();
     }
 
-    public void insertCoord(PointF p) {
+    public void insertCoord(PointF p, int iMode) {
         this.openWriteableDB();
 
         ContentValues cv = new ContentValues();
         cv.put(COORD_X, p.x);
         cv.put(COORD_Y, p.y);
-        cv.put(LOCATION_TIME, 0);
+        cv.put(IMODE, iMode);
         db.insert(COORD_TABLE, null, cv);
 
         this.close();
@@ -111,7 +111,7 @@ public class LocalDB {
         while (cursor.moveToNext()) {
             float cx = cursor.getFloat(COORD_X_COL);
             float cy = cursor.getFloat(COORD_Y_COL);
-            long time = cursor.getLong(LOCATION_TIME_COL);
+            //int iMode = cursor.getInt(IMODE_COL);
 
             PointF p = new PointF(cx, cy);
 
@@ -124,6 +124,25 @@ public class LocalDB {
         return list;
     }
 
+    public ArrayList<Integer> getModes() {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        this.openReadableDB();
+        Cursor cursor = db.query(COORD_TABLE,
+                null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            int iMode = cursor.getInt(IMODE_COL);
+            list.add(iMode);
+        }
+        if (cursor != null){
+            cursor.close();
+        }
+        this.close();
+        return list;
+    }
+
+    // deleteCoordinates, well...
+    // not just coordinates, but the whole db
     public void deleteCoordinates() {
         this.openWriteableDB();
         db.delete(COORD_TABLE, null, null);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -25,10 +26,9 @@ public class RemoteDraw extends View {
 
     Paint mPaint;
     Firebase ref;
-    double mX;
-    double mY;
     LocalDB db;
     ArrayList<PointF> arr_P = new ArrayList<>();
+    ArrayList<Integer> arr_Mode = new ArrayList<>();
 
     public RemoteDraw(Context context) {
         super(context);
@@ -54,15 +54,21 @@ public class RemoteDraw extends View {
                 System.out.println(snapshot.getValue());
                 //Log.d("firebase", snapshot.getValue().toString());
 
+                // OLD:
                 // was written in LocalDraw as a PointF, which Firebase converted to HashMap,
                 // so cast accordingly
-                Map<String, Object> snapMap = (Map<String, Object>) snapshot.getValue();
+                //Map<String, Object> snapMap = (Map<String, Object>) snapshot.getValue();
+                //mX = (double) snapMap.get("x");
+                //mY = (double) snapMap.get("y");
 
-                mX = (double) snapMap.get("x");
-                mY = (double) snapMap.get("y");
-
-                PointF p = new PointF((float) mX, (float) mY);
-                db.insertCoord(p);
+                // NEW:
+                // data saved using FireDrawData class
+                //for (DataSnapshot snappyroots: snapshot.getChildren()) {
+                    FireDrawData snapMap = snapshot.getValue(FireDrawData.class);
+                    PointF p = snapMap.getPoint();
+                    int iMode = snapMap.getMode();
+                    db.insertCoord(p, iMode);
+                //}
 
                 invalidate();
 
@@ -86,18 +92,31 @@ public class RemoteDraw extends View {
         float height = getHeight() - (paddingTop+paddingBottom);
 
         mPaint = new Paint();
-        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(20);
         mPaint.setColor(Color.RED);
 
         arr_P.clear();
         arr_P = db.getCoordinates();
+
+        arr_Mode.clear();
+        arr_Mode = db.getModes();
+
+        int i = 0;
+        Path path = new Path();
         for (PointF p : arr_P) {
-            if (p.x > 0 && p.x < width) {
-                if (p.y > 0 && p.y < height) {
-                    canvas.drawCircle(p.x, p.y, 5f, mPaint);
-                }
+            switch (arr_Mode.get(i++)) {
+                case 0:
+                    path.lineTo(p.x, p.y);
+                    break;
+                case 1:
+                    path.moveTo(p.x, p.y);
+                    break;
+                default:
+                    path.lineTo(p.x, p.y);
             }
         }
+        canvas.drawPath(path, mPaint);
 
     }
 

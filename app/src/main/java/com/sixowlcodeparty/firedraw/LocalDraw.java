@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ public class LocalDraw extends View {
     Paint mPaint;
     LocalDB db;
     ArrayList<PointF> arr_P = new ArrayList<>();
+    ArrayList<Integer> arr_Mode = new ArrayList<>();
     Firebase ref;
 
     public LocalDraw(Context context) {
@@ -49,18 +51,31 @@ public class LocalDraw extends View {
         float height = getHeight() - (paddingTop+paddingBottom);
 
         mPaint = new Paint();
-        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(20);
         mPaint.setColor(Color.BLUE);
 
         arr_P.clear();
         arr_P = db.getCoordinates();
+
+        arr_Mode.clear();
+        arr_Mode = db.getModes();
+
+        int i = 0;
+        Path path = new Path();
         for (PointF p : arr_P) {
-            if (p.x > 0 && p.x < width) {
-                if (p.y > 0 && p.y < height) {
-                    canvas.drawCircle(p.x, p.y, 5f, mPaint);
-                }
+            switch (arr_Mode.get(i++)) {
+                case 0:
+                    path.lineTo(p.x, p.y);
+                    break;
+                case 1:
+                    path.moveTo(p.x, p.y);
+                    break;
+                default:
+                    path.lineTo(p.x, p.y);
             }
         }
+        canvas.drawPath(path, mPaint);
 
     }
 
@@ -68,13 +83,20 @@ public class LocalDraw extends View {
     public boolean onTouchEvent(MotionEvent event) {
 
         PointF p = new PointF(event.getX(), event.getY());
-        db.insertCoord(p);
 
         //
         // FIREBASE WRITE OP
-        // will write the PointF object as a HashMap with "x" and "y" keys
+        // OLD: will write the PointF object as a HashMap with "x" and "y" keys
+        // NEW: will serialize a FireDrawData object
         //
-        ref.setValue(p);
+        int iMode = 0;  // assume in line-draw mode, unless...
+        if (event.getAction() != event.ACTION_MOVE) {
+            iMode = 1;  // ok, let's tell everyone to start a new line
+        }
+        FireDrawData fdd = new FireDrawData(p, iMode);
+        ref.setValue(fdd);  // was ref.setValue(p);
+
+        db.insertCoord(p, iMode);
 
         invalidate();
 
