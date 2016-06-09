@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">FireDraw</string>
+
+    <string-array name="color_channels">
+        <item>Red</item>
+        <item>Orange</item>
+        <item>Yellow</item>
+        <item>Green</item>
+        <item>Blue 1</item>
+        <item>Blue 2</item>
+    </string-array>
+
 </resources>

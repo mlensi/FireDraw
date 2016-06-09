@@ -21,12 +21,25 @@
             android:background="#27262d" />
         </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/rl_liveToggle"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="clear"
-        android:id="@+id/button"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="clear"
+            android:id="@+id/button"
+            android:layout_alignParentStart="true" />
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:entries="@array/color_channels" />
+    </RelativeLayout>
 
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,6 +1,7 @@
 package com.sixowlcodeparty.firedraw;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,6 +17,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,7 +28,7 @@ public class RemoteDraw extends View {
 
     Paint mPaint;
     Firebase ref;
-    LocalDB db;
+    Map<Integer, LocalDB> mapLocalDBs = new HashMap();
     ArrayList<PointF> arr_P = new ArrayList<>();
     ArrayList<Integer> arr_Mode = new ArrayList<>();
 
@@ -41,7 +43,13 @@ public class RemoteDraw extends View {
 
     private void init() {
 
-        db = new LocalDB(getContext(), "topdraw.db");   // TODO un-hardcode this
+        // build up the HashMap (keyed array) of all local databases
+        mapLocalDBs.put(MainActivity.channelRed,    new LocalDB(getContext(), MainActivity.RED_DB_NAME));
+        mapLocalDBs.put(MainActivity.channelOrange, new LocalDB(getContext(), MainActivity.ORANGE_DB_NAME));
+        mapLocalDBs.put(MainActivity.channelYellow, new LocalDB(getContext(), MainActivity.YELLOW_DB_NAME));
+        mapLocalDBs.put(MainActivity.channelGreen,  new LocalDB(getContext(), MainActivity.GREEN_DB_NAME));
+        mapLocalDBs.put(MainActivity.channelBlue1,  new LocalDB(getContext(), MainActivity.BLUE1_DB_NAME));
+        mapLocalDBs.put(MainActivity.channelBlue2,  new LocalDB(getContext(), MainActivity.BLUE2_DB_NAME));
 
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
 
@@ -63,12 +71,16 @@ public class RemoteDraw extends View {
 
                 // NEW:
                 // data saved using FireDrawData class
-                //for (DataSnapshot snappyroots: snapshot.getChildren()) {
-                    FireDrawData snapMap = snapshot.getValue(FireDrawData.class);
+                //
+                // update ALL databases (colors) from the snapshot
+                int iKey;
+                for (DataSnapshot snappyroots : snapshot.getChildren()) {
+                    iKey = Integer.parseInt(snappyroots.getKey());
+                    FireDrawData snapMap = snappyroots.getValue(FireDrawData.class);
                     PointF p = snapMap.getPoint();
                     int iMode = snapMap.getMode();
-                    db.insertCoord(p, iMode);
-                //}
+                    mapLocalDBs.get(iKey).insertCoord(p, iMode);
+                }
 
                 invalidate();
 
@@ -94,29 +106,46 @@ public class RemoteDraw extends View {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(20);
-        mPaint.setColor(Color.RED);
 
-        arr_P.clear();
-        arr_P = db.getCoordinates();
+        //
+        // REDRAW ALL LOCAL DATABASES, i.e. all colors
+        //
+        int iKey;
+        LocalDB db;
+        for (Map.Entry<Integer, LocalDB> entry : mapLocalDBs.entrySet()) {
 
-        arr_Mode.clear();
-        arr_Mode = db.getModes();
+            // remember, the key is also the color integer (sans alpha)
+            iKey = entry.getKey();
+            db = entry.getValue();
 
-        int i = 0;
-        Path path = new Path();
-        for (PointF p : arr_P) {
-            switch (arr_Mode.get(i++)) {
-                case 0:
-                    path.lineTo(p.x, p.y);
-                    break;
-                case 1:
-                    path.moveTo(p.x, p.y);
-                    break;
-                default:
-                    path.lineTo(p.x, p.y);
+            // add alpha channel to color integer
+            int r = Color.red(iKey);
+            int g = Color.green(iKey);
+            int b = Color.blue(iKey);
+            mPaint.setColor(Color.argb(255, r, g, b));
+
+            arr_P.clear();
+            arr_P = db.getCoordinates();
+
+            arr_Mode.clear();
+            arr_Mode = db.getModes();
+
+            int i = 0;
+            Path path = new Path();
+            for (PointF p : arr_P) {
+                switch (arr_Mode.get(i++)) {
+                    case 0:
+                        path.lineTo(p.x, p.y);
+                        break;
+                    case 1:
+                        path.moveTo(p.x, p.y);
+                        break;
+                    default:
+                        path.lineTo(p.x, p.y);
+                }
             }
+            canvas.drawPath(path, mPaint);
         }
-        canvas.drawPath(path, mPaint);
 
     }
 

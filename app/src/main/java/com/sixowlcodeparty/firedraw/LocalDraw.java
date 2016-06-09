@@ -35,7 +35,7 @@ public class LocalDraw extends View {
     }
 
     private void init() {
-        db = new LocalDB(getContext(), "bottomdraw.db");    // TODO un-hardcode
+        db = new LocalDB(getContext(), MainActivity.BOTTOM_DB_NAME);
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
     }
 
@@ -53,7 +53,7 @@ public class LocalDraw extends View {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(20);
-        mPaint.setColor(Color.BLUE);
+        mPaint.setColor(Color.BLACK);
 
         arr_P.clear();
         arr_P = db.getCoordinates();
@@ -94,7 +94,37 @@ public class LocalDraw extends View {
             iMode = 1;  // ok, let's tell everyone to start a new line
         }
         FireDrawData fdd = new FireDrawData(p, iMode);
-        ref.setValue(fdd);  // was ref.setValue(p);
+
+        // set the color, selected by user via spinner
+        int iSelectedColor;
+        switch (MainActivity.spinner_ColorChannel.getSelectedItemPosition()) {
+            case 0:
+                iSelectedColor = MainActivity.channelRed;
+                break;
+            case 1:
+                iSelectedColor = MainActivity.channelOrange;
+                break;
+            case 2:
+                iSelectedColor = MainActivity.channelYellow;
+                break;
+            case 3:
+                iSelectedColor = MainActivity.channelGreen;
+                break;
+            case 4:
+                iSelectedColor = MainActivity.channelBlue1;
+                break;
+            case 5:
+                iSelectedColor = MainActivity.channelBlue2;
+                break;
+            default:
+                iSelectedColor = MainActivity.channelRed;
+
+        }
+
+        // the color serves as the child node key
+        // this sets up a "color channel", if you will
+        // and the RemoteDraw class takes this string key and converts it into a useable color
+        ref.child(String.valueOf(iSelectedColor)).setValue(fdd);  // was ref.setValue(p);
 
         db.insertCoord(p, iMode);
 
