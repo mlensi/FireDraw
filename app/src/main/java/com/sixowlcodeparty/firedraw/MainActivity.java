@@ -3,6 +3,7 @@ package com.sixowlcodeparty.firedraw;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
@@ -38,6 +39,7 @@ public class MainActivity extends FragmentActivity {
     LocalDB dbBot;
     Button button_Clear;
     public static Spinner spinner_ColorChannel;
+    public static int mCurrentColor = channelRed;
 
 
     @Override
@@ -79,6 +81,39 @@ public class MainActivity extends FragmentActivity {
         });
 
         spinner_ColorChannel = (Spinner) findViewById(R.id.spinner);
+        spinner_ColorChannel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                switch (position) {
+                    case 0:
+                        mCurrentColor = MainActivity.channelRed;
+                        break;
+                    case 1:
+                        mCurrentColor = MainActivity.channelOrange;
+                        break;
+                    case 2:
+                        mCurrentColor = MainActivity.channelYellow;
+                        break;
+                    case 3:
+                        mCurrentColor = MainActivity.channelGreen;
+                        break;
+                    case 4:
+                        mCurrentColor = MainActivity.channelBlue1;
+                        break;
+                    case 5:
+                        mCurrentColor = MainActivity.channelBlue2;
+                        break;
+                    default:
+                        mCurrentColor = MainActivity.channelRed;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
 
     }
 

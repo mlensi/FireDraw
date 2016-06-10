@@ -96,36 +96,10 @@ public class LocalDraw extends View {
         }
         FireDrawData fdd = new FireDrawData(p, iMode);
 
-        // set the color, selected by user via spinner
-        int iSelectedColor;
-        switch (MainActivity.spinner_ColorChannel.getSelectedItemPosition()) {
-            case 0:
-                iSelectedColor = MainActivity.channelRed;
-                break;
-            case 1:
-                iSelectedColor = MainActivity.channelOrange;
-                break;
-            case 2:
-                iSelectedColor = MainActivity.channelYellow;
-                break;
-            case 3:
-                iSelectedColor = MainActivity.channelGreen;
-                break;
-            case 4:
-                iSelectedColor = MainActivity.channelBlue1;
-                break;
-            case 5:
-                iSelectedColor = MainActivity.channelBlue2;
-                break;
-            default:
-                iSelectedColor = MainActivity.channelRed;
-
-        }
-
         // the color serves as the child node key
         // this sets up a "color channel", if you will
         // and the RemoteDraw class takes this string key and converts it into a useable color
-        ref.child(String.valueOf(iSelectedColor)).setValue(fdd);  // was ref.setValue(p);
+        ref.child(String.valueOf(MainActivity.mCurrentColor)).setValue(fdd);  // was ref.setValue(p);
 
         db.insertCoord(p, iMode);
 

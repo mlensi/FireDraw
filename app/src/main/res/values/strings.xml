@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">FireDraw</string>
 
-    <string name="version">v1.3</string>
+    <string name="version">v1.4</string>
 
     <string-array name="color_channels">
         <item>Red</item>
