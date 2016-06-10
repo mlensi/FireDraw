@@ -36,6 +36,7 @@ public class LocalDraw extends View {
 
     private void init() {
         db = new LocalDB(getContext(), MainActivity.BOTTOM_DB_NAME);
+        Firebase.setAndroidContext(getContext());
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
     }
 

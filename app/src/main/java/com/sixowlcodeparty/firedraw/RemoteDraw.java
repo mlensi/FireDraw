@@ -51,6 +51,7 @@ public class RemoteDraw extends View {
         mapLocalDBs.put(MainActivity.channelBlue1,  new LocalDB(getContext(), MainActivity.BLUE1_DB_NAME));
         mapLocalDBs.put(MainActivity.channelBlue2,  new LocalDB(getContext(), MainActivity.BLUE2_DB_NAME));
 
+        Firebase.setAndroidContext(getContext());
         ref = new Firebase("https://firedraw-6e4c8.firebaseio.com/");
 
         //
@@ -73,6 +74,7 @@ public class RemoteDraw extends View {
                 // data saved using FireDrawData class
                 //
                 // update ALL databases (colors) from the snapshot
+                // TODO consider offloading to Async thread ??
                 int iKey;
                 for (DataSnapshot snappyroots : snapshot.getChildren()) {
                     iKey = Integer.parseInt(snappyroots.getKey());
@@ -124,27 +126,29 @@ public class RemoteDraw extends View {
             int b = Color.blue(iKey);
             mPaint.setColor(Color.argb(255, r, g, b));
 
-            arr_P.clear();
-            arr_P = db.getCoordinates();
+            if (db != null) {
+                arr_P.clear();
+                arr_P = db.getCoordinates();
 
-            arr_Mode.clear();
-            arr_Mode = db.getModes();
+                arr_Mode.clear();
+                arr_Mode = db.getModes();
 
-            int i = 0;
-            Path path = new Path();
-            for (PointF p : arr_P) {
-                switch (arr_Mode.get(i++)) {
-                    case 0:
-                        path.lineTo(p.x, p.y);
-                        break;
-                    case 1:
-                        path.moveTo(p.x, p.y);
-                        break;
-                    default:
-                        path.lineTo(p.x, p.y);
+                int i = 0;
+                Path path = new Path();
+                for (PointF p : arr_P) {
+                    switch (arr_Mode.get(i++)) {
+                        case 0:
+                            path.lineTo(p.x, p.y);
+                            break;
+                        case 1:
+                            path.moveTo(p.x, p.y);
+                            break;
+                        default:
+                            path.lineTo(p.x, p.y);
+                    }
                 }
+                canvas.drawPath(path, mPaint);
             }
-            canvas.drawPath(path, mPaint);
         }
 
     }
