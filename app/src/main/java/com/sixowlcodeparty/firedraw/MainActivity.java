@@ -11,6 +11,23 @@ import com.firebase.client.Firebase;
 
 import java.util.ArrayList;
 
+/**
+ * Created by Michael Lensi on 6/9/2016.
+ *
+ * Presents a bottom and top view with controls in between.
+ *
+ * Accepts touch input in the bottom view - saves touch coordinates to local database for line-drawing;
+ * Writes current coordinate to Firebase, with currently selected color;
+ * Draws both from the local database (bottom view),
+ * and from Firebase (top view).
+ *
+ * This demonstrates the speed of Firebase write/receive methods, and can be fun for multiple
+ * users to interact through drawing in real time.
+ *
+ * One local database per color is maintained,
+ * plus one more db for the input touches (shown in black in the bottom view).
+ */
+
 public class MainActivity extends FragmentActivity {
 
     // list of local databases corresponding to all available Firebase channels

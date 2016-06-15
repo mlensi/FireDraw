@@ -16,6 +16,9 @@ import java.util.ArrayList;
 
 /**
  * Created by Michael Lensi on 6/8/2016.
+ *
+ * Accepts touches in the bottom view, saves locally and to Firebase;
+ * draws from local db in black.
  */
 public class LocalDraw extends View {
 

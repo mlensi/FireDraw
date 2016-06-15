@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 /**
  * Created by Michael Lensi on 6/8/2016.
+ *
+ * Contains drawing coordinates and an int indicating whether or not to start a new line.
  */
 
 public class LocalDB {

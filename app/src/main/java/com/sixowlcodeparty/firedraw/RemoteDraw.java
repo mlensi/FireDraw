@@ -23,6 +23,10 @@ import java.util.Objects;
 
 /**
  * Created by Michael Lensi on 6/8/2016.
+ *
+ * Receives (via addValueEventListener) current coordinate and color from Firebase;
+ * saves coordinate in local database dedicated to that color.
+ * Draws lines from all local color databases (top view).
  */
 public class RemoteDraw extends View {
 
